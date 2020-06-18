@@ -58,7 +58,9 @@ export default class EditorToolbar {
                     { id: 'download-scene', img: 'icon-export', text: 'Save Scene File...' },
                     { id: 'serialize-scene', img: 'icon-export', text: 'Save Scene File As...' },
                     { type: 'break' },
-                    { id: 'export-final-scene', img: 'icon-files-project', text: 'Export Final Scene And Assets...' }
+                    { id: 'export-final-scene', img: 'icon-files-project', text: 'Export Final Scene And Assets...' },
+                    { type: 'break' },
+                    { id: 'publish-final-scene', img: 'icon-files-project', text: 'Publish Scene...' },
                 ]
             },
             { type: 'break' },
