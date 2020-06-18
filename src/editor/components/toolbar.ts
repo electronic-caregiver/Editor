@@ -17,6 +17,7 @@ import SceneFactory from '../scene/scene-factory';
 import SceneImporter from '../scene/scene-importer';
 import SceneManager from '../scene/scene-manager';
 import SceneSerializer from '../scene/scene-serializer';
+import ScenePublisher from '../scene/scene-publisher';
 
 import ProjectImporter from '../project/project-importer';
 import ProjectExporter from '../project/project-exporter';
@@ -227,6 +228,10 @@ export default class EditorToolbar {
 
             case 'scene:export-final-scene':
                 await ProjectExporter.ExportTemplate(this.editor, true);
+                break;
+
+            case 'scene:publish-final-scene':
+                new ScenePublisher(this.editor.core.scene);
                 break;
 
             // Edit

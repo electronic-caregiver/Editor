@@ -20,7 +20,7 @@ export default class ScenePublisher {
         window.buttons = ['Publish', 'Cancel'];
         window.width = 400;
         window.height = 190;
-        window.body = `<div id="SCENE-SERIALIZER-WINDOW" style="width: 100%; height: 100%"></div>`;
+        window.body = `<div id="SCENE-PUBLISHER-WINDOW" style="width: 100%; height: 100%"></div>`;
         window.open();
 
         // Form
@@ -34,7 +34,6 @@ export default class ScenePublisher {
         form.build('SCENE-PUBLISHER-WINDOW');
 
         // Set default values
-        form.element.record['name'] = 'scene';
         form.element.record['profile name'] = 'default';
         form.element.refresh();
 
@@ -47,8 +46,10 @@ export default class ScenePublisher {
 
             if (!form.isValid())
                 return;
+
+            alert(form.element.record);
             
-            const name = form.element.record['name'];
+            const profile = form.element.record['profile name'];
             const filePath = form.element.record['file path'];
             const provider = form.element.record['provider'];
             const distributionId = form.element.record['distribution ID']
