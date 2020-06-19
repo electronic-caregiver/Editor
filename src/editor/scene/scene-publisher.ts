@@ -18,14 +18,15 @@ export default class ScenePublisher {
         // Create window
         const window = new Window('Scene Publisher');
         window.buttons = ['Publish', 'Cancel'];
-        window.width = 650;
-        window.height = 220;
+        window.width = 410;
+        window.height = 300;
         window.body = `<div id="SCENE-PUBLISHER-WINDOW" style="width: 100%; height: 100%"></div>`;
         window.open();
 
         // Form
         const form = new Form('ScenePublisher');
         form.fields = [
+            { name: 'format', type: 'list', required: true, options: { items: ['GLTF','GLB'] } },
             { name: 'provider', type: 'list', required: true, options: { items: ['AWS',] } },
             { name: 'profile name', type: 'text', required: true },
             { name: 'bucket name', type: 'text', required: true },
@@ -46,12 +47,23 @@ export default class ScenePublisher {
                 return form.element.destroy();
 
             if (!form.isValid())
-                return;
+                return Window.CreateAlert('Error when publishing the scene');
 
             const profile = form.element.record['profile name'];
             const filePath = form.element.record['file path'];
-            const provider = form.element.record['provider'];
             const distributionId = form.element.record['distribution ID']
+            const provider = form.element.record['provider'].id;
+            const format = form.element.record['format'].id;
+
+            try {
+                switch (format) {
+                    case 'GLB': (await GLTF2Export.GLBAsync(scene, name, { })).downloadFiles(); break;
+                    case 'GLTF': (await GLTF2Export.GLTFAsync(scene, name, { })).downloadFiles(); break;
+                    default: return;
+                }
+            } catch (e) {
+                Window.CreateAlert(e.message, 'Error when exporting the scene');
+            }
 
             // Clear
             form.element.destroy();
