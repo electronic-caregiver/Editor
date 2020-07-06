@@ -8,32 +8,42 @@ import { Toolbar } from "./toolbar";
  * @param editor defines the main reference to the editor.
  */
 export const registerEditorPlugin = (editor: Editor): IPlugin => {
-    return {
-        /**
-         * Defines the list of all toolbar elements to add when the plugin has been loaded.
-         */
-        toolbar: [
-            { buttonLabel: "Sample Plugin", buttonIcon: "airplane", content: <Toolbar editor={editor} /> }
-        ],
+  return {
+    /**
+     * Defines the list of all toolbar elements to add when the plugin has been loaded.
+     */
+    toolbar: [
+      { buttonLabel: "Publish Plugin", buttonIcon: "export", content: <Toolbar editor={editor} /> }
+    ],
 
-        /**
-         * If implemented, should return an object (plain JSON object) that will be saved
-         * in the workspace file. This will be typically used to store preferences of the plugin
-         * work a given workspace and not globally.
-         * If implemented, the preferences will be saved in the .editorworkspace file each time the user
-         * saves the project.
-         */
-        getWorkspacePreferences: () => {
-            return { myProperty: "I'm preferences of the plugin" };
-        },
+    /**
+     * If implemented, should return an object (plain JSON object) that will be saved
+     * in the workspace file. This will be typically used to store preferences of the plugin
+     * work a given workspace and not globally.
+     * If implemented, the preferences will be saved in the .editorworkspace file each time the user
+     * saves the project.
+     */
+    getWorkspacePreferences: () => {
+      //if not in localStorage, return defaults
 
-        /**
-         * When the plugin saved preferences (@see .getWorkspacePreferences) this function
-         * will be called giving the plain JSON representation of the user's preferences for
-         * the current plugin.
-         */
-        setWorkspacePreferences: (preferences: any) => {
-            console.log(preferences);
-        }
-    };
+      return {
+        profile: 'default',
+        filepath: 'scenes/default/scene.babylon',
+        distributionId: '',
+        provider: 'AWS',
+        format: 'GLTF',
+      };
+
+      // return { myProperty: "I'm preferences of the plugin" };
+    },
+
+    /**
+     * When the plugin saved preferences (@see .getWorkspacePreferences) this function
+     * will be called giving the plain JSON representation of the user's preferences for
+     * the current plugin.
+     */
+    setWorkspacePreferences: (preferences: any) => {
+      console.log(preferences);
+    }
+  };
 }
