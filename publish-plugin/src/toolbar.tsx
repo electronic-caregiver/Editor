@@ -36,8 +36,9 @@ export class Toolbar extends React.Component<IToolbarProps, IToolbarState> {
             onClick={() => this._handleVisible()}
           />
         </Menu>
-        this.state.dialogVisible &&{" "}
-        <PublishDialog handleInvisible={this._handleInvisible} />
+        {this.state.dialogVisible && (
+          <PublishDialog handleInvisible={this._handleInvisible} />
+        )}
       </>
     );
   }
