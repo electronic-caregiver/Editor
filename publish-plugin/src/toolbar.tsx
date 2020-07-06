@@ -1,10 +1,10 @@
 import * as React from "react";
-import { Menu, MenuItem, MenuDivider } from "@blueprintjs/core";
-import { GLTF2Export } from 'babylonjs-serializers';
+import { Menu, MenuItem } from "@blueprintjs/core";
+// import { GLTF2Export } from "babylonjs-serializers";
 
-import { Editor, Alert, ProjectExporter } from "babylonjs-editor";
+import { Editor } from "babylonjs-editor";
 
-import { PublishDialog } from './dialog';
+import { PublishDialog } from "./dialog";
 
 export interface IToolbarProps {
   /**
@@ -15,11 +15,11 @@ export interface IToolbarProps {
 }
 
 export interface IToolbarState {
-  dialogVisible: boolean,
-};
+  dialogVisible: boolean;
+}
 
 export class Toolbar extends React.Component<IToolbarProps, IToolbarState> {
-  private state: IToolbarState = {
+  public state: IToolbarState = {
     dialogVisible: false,
   };
 
@@ -30,23 +30,28 @@ export class Toolbar extends React.Component<IToolbarProps, IToolbarState> {
     return (
       <>
         <Menu>
-          <MenuItem text="Publish Scene..." icon="export" onClick={() => this._handleVisible()} />
+          <MenuItem
+            text="Publish Scene..."
+            icon="export"
+            onClick={() => this._handleVisible()}
+          />
         </Menu>
-        this.state.dialogVisible && <PublishDialog handleInvisible={this._handleInvisible} />
+        this.state.dialogVisible &&{" "}
+        <PublishDialog handleInvisible={this._handleInvisible} />
       </>
     );
   }
 
   private _handleVisible(): void {
     this.setState({
-      dialogVisible: true
-    })
+      dialogVisible: true,
+    });
   }
 
   private _handleInvisible(): void {
     this.setState({
-      dialogVisible: true
-    })
+      dialogVisible: true,
+    });
   }
 
   // private async _handlePublishScene(): Promise<void> {
@@ -65,7 +70,6 @@ export class Toolbar extends React.Component<IToolbarProps, IToolbarState> {
   //       case 'GLTF': exportedScene = await GLTF2Export.GLTFAsync(this.props.editor.scene, name, {}); break;
   //       default: return;
   //     }
-
 
   //   } catch (e) {
   //     throw new Error('Error publishing scene');
