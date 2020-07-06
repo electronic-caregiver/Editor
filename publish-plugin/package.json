@@ -1,18 +1,18 @@
 {
-    "name": "babylonjs-editor-sample-plugin",
-    "version": "1.0.0",
-    "description": "",
-    "main": "build/src/index.js",
-    "author": {
-        "name": "Julien Moreau-Mathis",
-        "url": "https://medium.com/@Luaacro"
-    },
-    "scripts": {
-        "watch": "tsc -p . --watch"
-    },
-    "devDependencies": {
-        "babylonjs-editor": "file:../module",
-        "typescript": "3.7.5"
-    },
-    "dependencies": {}
+  "name": "babylonjs-editor-sample-plugin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/src/index.js",
+  "author": {
+    "name": "Julien Moreau-Mathis",
+    "url": "https://medium.com/@Luaacro"
+  },
+  "scripts": {
+    "watch": "tsc -p . --watch"
+  },
+  "devDependencies": {
+    "babylonjs-editor": "4.0.0-beta.1",
+    "typescript": "3.7.5"
+  },
+  "dependencies": {}
 }
