@@ -11,6 +11,7 @@ export interface IToolbarProps {
    * Defines the reference to the editor.
    */
   editor: Editor;
+  getWorkspacePreferences: (preferences: any) => void;
 }
 
 export interface IToolbarState {
@@ -18,7 +19,7 @@ export interface IToolbarState {
 };
 
 export class Toolbar extends React.Component<IToolbarProps, IToolbarState> {
-  private state = {
+  private state: IToolbarState = {
     dialogVisible: false,
   };
 
@@ -31,7 +32,7 @@ export class Toolbar extends React.Component<IToolbarProps, IToolbarState> {
         <Menu>
           <MenuItem text="Publish Scene..." icon="export" onClick={() => this._handleVisible()} />
         </Menu>
-        <PublishDialog handleInvisible={this._handleInvisible} />
+        this.state.dialogVisible && <PublishDialog handleInvisible={this._handleInvisible} />
       </>
     );
   }
@@ -48,18 +49,26 @@ export class Toolbar extends React.Component<IToolbarProps, IToolbarState> {
     })
   }
 
-  private _handlePublishScene(): void {
-    let exportedScene;
-    try {
+  // private async _handlePublishScene(): Promise<void> {
+  //   let exportedScene;
+  //   try {
 
-      switch (format) {
-        case 'GLB': exportedScene = await GLTF2Export.GLBAsync(this.props.scene, name, {}); break;
-        case 'GLTF': exportedScene = await GLTF2Export.GLTFAsync(this.props.scene, name, {}); break;
-        default: return;
-      }
-    } catch (e) {
-      Window.CreateAlert(e.message, 'Error when exporting the scene');
-    }
+  //     if(!this.props.editor.scene) {
+  //       throw new Error('No active scene to publish');
+  //       return;
+  //     }
 
-  }
+  //     // const workspace = this.props.editor.();
+
+  //     switch (format) {
+  //       case 'GLB': exportedScene = await GLTF2Export.GLBAsync(this.props.editor.scene, name, {}); break;
+  //       case 'GLTF': exportedScene = await GLTF2Export.GLTFAsync(this.props.editor.scene, name, {}); break;
+  //       default: return;
+  //     }
+
+
+  //   } catch (e) {
+  //     throw new Error('Error publishing scene');
+  //   }
+  // }
 }
