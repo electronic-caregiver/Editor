@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, Button, } from '@blueprintjs/core';
+import { Dialog,  } from '@blueprintjs/core';
 
 export interface IPublishDialogProps {
   handleInvisible: Function,
@@ -24,7 +24,7 @@ export class PublishDialog extends React.Component<IPublishDialogProps, IPublish
     </Dialog>);
   }
 
-  private onClose(): void {
+  private onClose(): Function {
 
 
     //finally, set the outer state to mark this dialog as invisible
