@@ -1,5 +1,5 @@
 {
-  "name": "babylonjs-editor-sample-plugin",
+  "name": "babylonjs-editor-publish-plugin",
   "version": "1.0.0",
   "description": "",
   "main": "build/src/index.js",
@@ -8,10 +8,11 @@
     "url": "https://medium.com/@Luaacro"
   },
   "scripts": {
+    "compile": "tsc -p .",
     "watch": "tsc -p . --watch"
   },
   "devDependencies": {
-    "babylonjs-editor": "4.0.0-beta.1",
+    "babylonjs-editor": "4.0.0-beta.2",
     "typescript": "3.7.5"
   },
   "dependencies": {}
