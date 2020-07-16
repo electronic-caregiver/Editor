@@ -8,6 +8,15 @@ import { Settings } from "./settings";
 import { IPC } from "./ipc";
 import { WindowController } from "./window";
 
+// using import
+import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
+
+app.whenReady().then(() => {
+    installExtension(REACT_DEVELOPER_TOOLS)
+        .then((name) => console.log(`Added Extension:  ${name}`))
+        .catch((err) => console.log('An error occurred: ', err));
+});
+
 export default class EditorApp {
     /**
 	 * The main editor's window reference (electron)
@@ -92,7 +101,18 @@ export default class EditorApp {
 			url: "file://" + __dirname + "/../../../../html/editor.html",
 			autofocus: true,
 		});
+
+		console.log("this.Window: ", this.Window);
+
 		this.Window.maximize();
+
+		installExtension(REACT_DEVELOPER_TOOLS).then((name) => {
+			console.log(`Added Extension:  ${name}`);
+		})
+		.catch((err) => {
+			console.log('An error occurred: ', err)
+		});
+
 		this.Window.on("closed", () => app.quit());
 		this.Window.on("close", async (e) => {
 			if (this._forceQuit) { return; }

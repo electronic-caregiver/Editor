@@ -15,12 +15,14 @@ export interface IToolbarProps {
 }
 
 export interface IToolbarState {
-  dialogVisible: boolean;
+  isOpen: boolean;
 }
+
+// let _isOpen = false;
 
 export class Toolbar extends React.Component<IToolbarProps, IToolbarState> {
   public state: IToolbarState = {
-    dialogVisible: false,
+    isOpen: true,
   };
 
   /**
@@ -29,29 +31,29 @@ export class Toolbar extends React.Component<IToolbarProps, IToolbarState> {
   public render(): React.ReactNode {
     return (
       <>
-        <Menu>
+        <Menu key={"publish-menu"}>
           <MenuItem
+            key = {"publish-menu-item-scene"}
             text="Publish Scene..."
             icon="export"
             onClick={() => this._handleVisible()}
           />
         </Menu>
-        {this.state.dialogVisible && (
-          <PublishDialog handleInvisible={this._handleInvisible} />
-        )}
+        <PublishDialog isOpen={this.state.isOpen} key={"publish-dialog"} handleInvisible={this._handleInvisible} handleVisible={this._handleVisible} />
+        
       </>
     );
   }
 
   private _handleVisible(): void {
     this.setState({
-      dialogVisible: true,
+      isOpen: true,
     });
   }
 
   private _handleInvisible(): void {
     this.setState({
-      dialogVisible: true,
+      isOpen: false,
     });
   }
 
