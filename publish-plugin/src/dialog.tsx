@@ -3,9 +3,11 @@ import { Classes, Dialog, Button, RadioGroup, Radio, FormGroup, Label } from "@b
 import { GLTF2Export } from "babylonjs-serializers";
 import { SceneSerializer } from "babylonjs";
 import { Editor } from "babylonjs-editor";
-import AWS from 'aws-sdk';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { Buffer } from "buffer";
 
-const S3 : AWS.S3 = new AWS.S3();
+
+// const S3 : AWS.S3 = new AWS.S3();
 
 export interface IPublishDialogProps {
   handleInvisible: Function;
@@ -42,7 +44,6 @@ export class PublishDialog extends React.Component<
   public render(): React.ReactNode {
     const prefs = this.props.getWorkspacePreferences();
     console.log("workspacePreferences: ", prefs);
-    console.log("aws.config.credentials:", AWS.config.credentials);
     // console.log('userData: ', app.getPath('userData'));
  
     return (<Dialog
@@ -96,6 +97,7 @@ export class PublishDialog extends React.Component<
 
   private async _handlePublishScene(): Promise<void> {
     let exportedScene : any;
+    const client = new S3Client({region: 'us-east-1'});
     try {
 
       if(!this.props.editor.scene) {
@@ -108,14 +110,17 @@ export class PublishDialog extends React.Component<
       switch (this.state.format) {
         case 'glb': 
           exportedScene = await GLTF2Export.GLBAsync(this.props.editor.scene, name, {}); 
-          let obj = exportedScene.glTFFiles[".glb"];
-          console.log("obj: ", obj);
-          const buffer = await obj.arrayBuffer();
-          await S3.upload({
-            Body: buffer,
+          exportedScene.downloadFiles();
+          let glbBlob = exportedScene.glTFFiles[".glb"];
+          const buffer : ArrayBuffer = await glbBlob.arrayBuffer();
+          const stringified : Buffer = Buffer.from(buffer);
+          const command = new PutObjectCommand({
+            Body: stringified,
             Bucket: this.state.bucket,
-            Key: `${this.state.filepath}.${this.state.format}`,
-          }).promise();
+            Key: this.state.filepath,
+          })
+
+          await client.send(command);
           break;
         case 'gltf': 
           exportedScene = await GLTF2Export.GLTFAsync(this.props.editor.scene, name, {}); 
