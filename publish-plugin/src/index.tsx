@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Editor, IPlugin } from "babylonjs-editor";
-
 import { Toolbar } from "./toolbar";
 
 /**
@@ -9,8 +8,10 @@ import { Toolbar } from "./toolbar";
  */
 export const registerEditorPlugin = (editor: Editor): IPlugin => {
   const _getWorkspacePreferences = () => {
-    //if not in localStorage, return defaults
+    // console.log("path.dirname(): ", path.dirname());
 
+
+    //if not in localStorage, return defaults
     return {
       profile: 'default',
       filepath: 'scenes/default/scene.babylon',

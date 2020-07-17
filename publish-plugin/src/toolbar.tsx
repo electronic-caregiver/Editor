@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Menu, MenuItem } from "@blueprintjs/core";
+// import { Menu, MenuItem } from "@blueprintjs/core";
 // import { GLTF2Export } from "babylonjs-serializers";
 
 import { Editor } from "babylonjs-editor";
@@ -30,19 +30,8 @@ export class Toolbar extends React.Component<IToolbarProps, IToolbarState> {
    */
   public render(): React.ReactNode {
     return (
-      <>
-        <Menu key={"publish-menu"}>
-          <MenuItem
-            key = {"publish-menu-item-scene"}
-            text="Publish Scene..."
-            icon="export"
-            onClick={() => this._handleVisible()}
-          />
-        </Menu>
-        <PublishDialog isOpen={this.state.isOpen} key={"publish-dialog"} handleInvisible={this._handleInvisible} handleVisible={this._handleVisible} />
-        
-      </>
-    );
+      <PublishDialog editor={this.props.editor} getWorkspacePreferences={this.props.getWorkspacePreferences} isOpen={this.state.isOpen} key={"publish-dialog"} handleInvisible={this._handleInvisible} handleVisible={this._handleVisible} />
+      );
   }
 
   private _handleVisible(): void {
@@ -56,26 +45,4 @@ export class Toolbar extends React.Component<IToolbarProps, IToolbarState> {
       isOpen: false,
     });
   }
-
-  // private async _handlePublishScene(): Promise<void> {
-  //   let exportedScene;
-  //   try {
-
-  //     if(!this.props.editor.scene) {
-  //       throw new Error('No active scene to publish');
-  //       return;
-  //     }
-
-  //     // const workspace = this.props.editor.();
-
-  //     switch (format) {
-  //       case 'GLB': exportedScene = await GLTF2Export.GLBAsync(this.props.editor.scene, name, {}); break;
-  //       case 'GLTF': exportedScene = await GLTF2Export.GLTFAsync(this.props.editor.scene, name, {}); break;
-  //       default: return;
-  //     }
-
-  //   } catch (e) {
-  //     throw new Error('Error publishing scene');
-  //   }
-  // }
 }
