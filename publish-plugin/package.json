@@ -16,6 +16,7 @@
     "typescript": "3.7.5"
   },
   "dependencies": {
+    "aws-sdk": "^2.715.0",
     "file-system": "^2.2.2",
     "path": "^0.12.7"
   }

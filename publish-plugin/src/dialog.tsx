@@ -3,6 +3,9 @@ import { Classes, Dialog, Button, RadioGroup, Radio, FormGroup, Label } from "@b
 import { GLTF2Export } from "babylonjs-serializers";
 import { SceneSerializer } from "babylonjs";
 import { Editor } from "babylonjs-editor";
+import AWS from 'aws-sdk';
+
+const S3 : AWS.S3 = new AWS.S3();
 
 export interface IPublishDialogProps {
   handleInvisible: Function;
@@ -17,6 +20,7 @@ export interface IPublishDialogState {
   format: string;
   filepath: string;
   distroId: string;
+  bucket: string;
 
 }
 
@@ -32,11 +36,13 @@ export class PublishDialog extends React.Component<
     format: 'glb',
     filepath: 'scenes/my_scene/babylon' + DEFAULT_FORMAT,
     distroId: '',
+    bucket: '',
   };
 
   public render(): React.ReactNode {
     const prefs = this.props.getWorkspacePreferences();
     console.log("workspacePreferences: ", prefs);
+    console.log("aws.config.credentials:", AWS.config.credentials);
     // console.log('userData: ', app.getPath('userData'));
  
     return (<Dialog
@@ -67,15 +73,15 @@ export class PublishDialog extends React.Component<
         </RadioGroup>  
         <Label>
           File Path
-          <input placeholder={'scenes/my_scene/babylon' + DEFAULT_FORMAT} className={Classes.INPUT} id="publish-path" name="publish-path" />
+          <input onChange={(evt) => {this.setState({filepath: evt.target.value})}} placeholder={'scenes/my_scene/babylon' + DEFAULT_FORMAT} className={Classes.INPUT} id="publish-path" name="publish-path" />
         </Label>
         <Label>
            Bucket Name
-          <input placeholder={'my-bucket-name'} className={Classes.INPUT} id="publish-bucket" name="publish-bucket" />
+          <input onChange={(evt) => {this.setState({bucket: evt.target.value})}} placeholder={'my-bucket-name'} className={Classes.INPUT} id="publish-bucket" name="publish-bucket" />
         </Label>
         <Label>
            Distribution ID
-          <input placeholder={'ASDF'} className={Classes.INPUT} id="publish-distro-id" name="publish-distro-id" />
+          <input onChange={(evt) => {this.setState({distroId: evt.target.value})}} placeholder={'ASDF'} className={Classes.INPUT} id="publish-distro-id" name="publish-distro-id" />
         </Label>
         </FormGroup>
       </div>
@@ -89,7 +95,7 @@ export class PublishDialog extends React.Component<
   }
 
   private async _handlePublishScene(): Promise<void> {
-    let exportedScene;
+    let exportedScene : any;
     try {
 
       if(!this.props.editor.scene) {
@@ -102,6 +108,14 @@ export class PublishDialog extends React.Component<
       switch (this.state.format) {
         case 'glb': 
           exportedScene = await GLTF2Export.GLBAsync(this.props.editor.scene, name, {}); 
+          let obj = exportedScene.glTFFiles[".glb"];
+          console.log("obj: ", obj);
+          const buffer = await obj.arrayBuffer();
+          await S3.upload({
+            Body: buffer,
+            Bucket: this.state.bucket,
+            Key: `${this.state.filepath}.${this.state.format}`,
+          }).promise();
           break;
         case 'gltf': 
           exportedScene = await GLTF2Export.GLTFAsync(this.props.editor.scene, name, {}); 
@@ -114,13 +128,7 @@ export class PublishDialog extends React.Component<
       console.log("exportedScene: ", exportedScene);
 
     } catch (e) {
-      throw new Error('Error publishing scene');
+      throw new Error('Error publishing scene, e: ' + e);
     }
   }
-
-  // private onClose(): Function {
-
-  //   //finally, set the outer state to mark this dialog as invisible
-  //   this.props.handleInvisible();
-  // };
 }
