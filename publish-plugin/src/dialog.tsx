@@ -4,6 +4,7 @@ import { GLTF2Export } from "babylonjs-serializers";
 import { SceneSerializer } from "babylonjs";
 import { Editor } from "babylonjs-editor";
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { CloudFrontClient, CreateInvalidationCommand } from "@aws-sdk/client-cloudfront-node/CloudFrontClient";
 import { Buffer } from "buffer";
 
 
@@ -95,6 +96,27 @@ export class PublishDialog extends React.Component<
     </Dialog>);
   }
 
+
+  private async _handleCacheInvalidation(): Promise<void> {
+    const params = {
+      DistributionId: this.state.distroId,              //addison-cdn constant
+      InvalidationBatch: { /* required */
+        CallerReference: (new Date(Date.now())).toUTCString(), 
+        Paths: { 
+          Quantity: 1, 
+          Items: [
+            this.state.filepath,
+          ]
+        }
+      }
+    };
+
+    const client = new CloudFrontClient({region: 'us-east-1'});
+    const command = new CreateInvalidationCommand(params);
+
+    await client.send(command);
+  }
+  
   private async _handlePublishScene(): Promise<void> {
     let exportedScene : any;
     const client = new S3Client({region: 'us-east-1'});
