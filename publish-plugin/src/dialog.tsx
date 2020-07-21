@@ -7,9 +7,6 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { CloudFrontClient, CreateInvalidationCommand } from "@aws-sdk/client-cloudfront-node/CloudFrontClient";
 import { Buffer } from "buffer";
 
-
-// const S3 : AWS.S3 = new AWS.S3();
-
 export interface IPublishDialogProps {
   handleInvisible: Function;
   handleVisible: Function;
@@ -22,9 +19,8 @@ export interface IPublishDialogState {
   isOpen: boolean;
   format: string;
   filepath: string;
-  distroId: string;
+  distroId: string | undefined;
   bucket: string;
-
 }
 
 const DEFAULT_FORMAT = '.glb';
@@ -38,14 +34,13 @@ export class PublishDialog extends React.Component<
     isOpen: this.props.isOpen,
     format: 'glb',
     filepath: 'scenes/my_scene/babylon' + DEFAULT_FORMAT,
-    distroId: '',
+    distroId: undefined,
     bucket: '',
   };
 
   public render(): React.ReactNode {
     const prefs = this.props.getWorkspacePreferences();
     console.log("workspacePreferences: ", prefs);
-    // console.log('userData: ', app.getPath('userData'));
  
     return (<Dialog
       isOpen={this.state.isOpen}
@@ -132,7 +127,7 @@ export class PublishDialog extends React.Component<
       switch (this.state.format) {
         case 'glb': 
           exportedScene = await GLTF2Export.GLBAsync(this.props.editor.scene, name, {}); 
-          exportedScene.downloadFiles();
+          // exportedScene.downloadFiles();
           let glbBlob = exportedScene.glTFFiles[".glb"];
           const buffer : ArrayBuffer = await glbBlob.arrayBuffer();
           const stringified : Buffer = Buffer.from(buffer);
@@ -150,6 +145,10 @@ export class PublishDialog extends React.Component<
         case 'babylon': 
           exportedScene = await SceneSerializer.Serialize(this.props.editor.scene);
         default: return;
+      }
+
+      if(this.state.distroId) {
+        await this._handleCacheInvalidation();
       }
 
       console.log("exportedScene: ", exportedScene);
