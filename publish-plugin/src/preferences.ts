@@ -23,7 +23,7 @@ export interface PublishPreferences {
  * The saved preferences (with default values) for the plugin
  */
 export const preferences : PublishPreferences = {
-    filepath: 'scenes/default/scene.babylon',
+    filepath: 'scenes/default/scene.glb',
     distroId: '',
     format: 'glb',
     bucket: 'my-bucket-name'

@@ -3,12 +3,15 @@ import * as React from "react";
 import { Editor, IPlugin } from "babylonjs-editor";
 import { Toolbar } from "./toolbar";
 import { exportPreferences, importPreferences } from "./preferences";
+// import { PublishPreferencesInspector } from "./inspector";
 
 /**
  * Registers the plugin by returning the IPlugin content.
  * @param editor defines the main reference to the editor.
  */
 export const registerEditorPlugin = (editor: Editor): IPlugin => {
+  // PublishPreferencesInspector.Register();
+
   return {
     /**
      * Defines the list of all toolbar elements to add when the plugin has been loaded.
@@ -25,6 +28,7 @@ export const registerEditorPlugin = (editor: Editor): IPlugin => {
      * saves the project.
      */
     getWorkspacePreferences: () : any => {
+      console.log("storing plugin preferences in workspace");
       return exportPreferences();
     },
 

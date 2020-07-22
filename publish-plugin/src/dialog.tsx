@@ -6,7 +6,7 @@ import { Editor } from "babylonjs-editor";
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { CloudFront } from 'aws-sdk';
 import { Buffer } from "buffer";
-import { exportPreferences, PublishPreferences } from './preferences';
+import { exportPreferences, importPreferences } from './preferences';
 
 export interface IPublishDialogProps {
   handleInvisible: Function;
@@ -33,7 +33,7 @@ export class PublishDialog extends React.Component<
   public state: IPublishDialogState = {
     isOpen: this.props.isOpen,
     format: 'glb',
-    filepath: 'scenes/my_scene/babylon' + '.' + DEFAULT_FORMAT,
+    filepath: 'scenes/my_scene/babylon' + '.' + DEFAULT_FORMAT, 
     distroId: '',
     bucket: '',
   };
@@ -41,23 +41,13 @@ export class PublishDialog extends React.Component<
   public constructor(props) {
     super(props);
 
+    //grab the local preferences and set them in the local state (so they can be referenced as the default values in the render() function)
     const prefs = exportPreferences();
 
     this.state.filepath = prefs.filepath;
     this.state.distroId = prefs.distroId;
     this.state.bucket = prefs.bucket;
     this.state.format = prefs.format;
-  }
-
-  public componentDidMount() : void {
-    console.log("exportPreferences(): ", exportPreferences());
-  };
-
-    /**
-     * Called on the user wants to edit the preferences of the plugin.
-     */
-    private _handleShowPreferences(): void {
-      this.props.editor.inspector.setSelectedObject(new PublishPreferences());
   }
 
   public render(): React.ReactNode {
@@ -70,7 +60,6 @@ export class PublishDialog extends React.Component<
       enforceFocus={true}
       transitionDuration={1000}
     >
-      <button onClick={() => this._handleShowPreferences()}>Preferences</button>
       <div className={Classes.DIALOG_BODY} key={"hello-world"}>
       <FormGroup>
         <RadioGroup
@@ -184,6 +173,10 @@ export class PublishDialog extends React.Component<
       if(this.state.distroId && this.state.distroId !== '') {
         await this._handleCacheInvalidation();
       }
+
+      importPreferences({
+        ...this.state
+      })
 
     } catch (e) {
       throw new Error('Error publishing scene: ' + e);

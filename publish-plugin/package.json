@@ -12,7 +12,7 @@
     "watch": "tsc -p . --watch"
   },
   "devDependencies": {
-    "babylonjs-editor": "4.0.0-beta.2",
+    "babylonjs-editor": "4.0.0-beta.3",
     "typescript": "3.7.5"
   },
   "dependencies": {
