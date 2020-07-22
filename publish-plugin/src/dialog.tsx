@@ -4,7 +4,7 @@ import { GLTF2Export } from "babylonjs-serializers";
 import { SceneSerializer } from "babylonjs";
 import { Editor } from "babylonjs-editor";
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import { CloudFrontClient, CreateInvalidationCommand } from "@aws-sdk/client-cloudfront-node/CloudFrontClient";
+import { CloudFront } from 'aws-sdk';
 import { Buffer } from "buffer";
 
 export interface IPublishDialogProps {
@@ -19,7 +19,7 @@ export interface IPublishDialogState {
   isOpen: boolean;
   format: string;
   filepath: string;
-  distroId: string | undefined;
+  distroId: string;
   bucket: string;
 }
 
@@ -34,19 +34,19 @@ export class PublishDialog extends React.Component<
     isOpen: this.props.isOpen,
     format: 'glb',
     filepath: 'scenes/my_scene/babylon' + DEFAULT_FORMAT,
-    distroId: undefined,
+    distroId: '',
     bucket: '',
   };
 
-  public render(): React.ReactNode {
+  public componentDidMount() : void {
     const prefs = this.props.getWorkspacePreferences();
     console.log("workspacePreferences: ", prefs);
+  };
+
+  public render(): React.ReactNode {
  
     return (<Dialog
       isOpen={this.state.isOpen}
-      // onClose={() => {
-      //   this.props.handleInvisible();
-      // }}
       autoFocus={true}
       usePortal={false}
       canOutsideClickClose={false}
@@ -93,28 +93,40 @@ export class PublishDialog extends React.Component<
 
 
   private async _handleCacheInvalidation(): Promise<void> {
+    if(!this.state.filepath) {
+      throw new Error('Invalid filepath');
+    }
+
+    if(!this.state.distroId || this.state.distroId === '') {
+      throw new Error('Invalid Distribution ID')
+    }
+
+    //CloudFront requires a leading slash, however S3 will create an "empty folder" (leading slash) if uploaded with it;
+    //so we choose the convention of not adding a leading slash in the filepath, and prepending it for the CloudFront command.
+    const filepath = this.state.filepath.charAt(0) === '/' ? this.state.filepath : `/${this.state.filepath}`;
+
+    //TODO: handle gltf and .babylon formats, which output multiple files
+    const Items = [ filepath ];
+
     const params = {
-      DistributionId: this.state.distroId,              //addison-cdn constant
-      InvalidationBatch: { /* required */
+      DistributionId: this.state.distroId,
+      InvalidationBatch: {
         CallerReference: (new Date(Date.now())).toUTCString(), 
         Paths: { 
-          Quantity: 1, 
-          Items: [
-            this.state.filepath,
-          ]
+          Quantity: Items.length, 
+          Items,
         }
       }
     };
 
-    const client = new CloudFrontClient({region: 'us-east-1'});
-    const command = new CreateInvalidationCommand(params);
+    const client = new CloudFront({region: 'us-east-1'});
 
-    await client.send(command);
+    await client.createInvalidation(params).promise();
   }
   
   private async _handlePublishScene(): Promise<void> {
     let exportedScene : any;
-    const client = new S3Client({region: 'us-east-1'});
+    const client : S3Client = new S3Client({region: 'us-east-1'});
     try {
 
       if(!this.props.editor.scene) {
@@ -122,39 +134,41 @@ export class PublishDialog extends React.Component<
         return;
       }
 
-      // const workspace = this.props.editor.();
-
       switch (this.state.format) {
         case 'glb': 
           exportedScene = await GLTF2Export.GLBAsync(this.props.editor.scene, name, {}); 
-          // exportedScene.downloadFiles();
           let glbBlob = exportedScene.glTFFiles[".glb"];
+          //cast the Blob to an ArrayBuffer
           const buffer : ArrayBuffer = await glbBlob.arrayBuffer();
+          //cast the ArrayBuffer to a Buffer, because this is a necessary step for some reason
           const stringified : Buffer = Buffer.from(buffer);
+          //create and send the command; 
           const command = new PutObjectCommand({
             Body: stringified,
             Bucket: this.state.bucket,
             Key: this.state.filepath,
-          })
+          });
 
           await client.send(command);
           break;
+          //TODO: research upload for gltf (multiple files, JSON-like w/ texture files) and how it works when importing
         case 'gltf': 
           exportedScene = await GLTF2Export.GLTFAsync(this.props.editor.scene, name, {}); 
           break;
+          //TODO: research upload for Babylon native format (multiple files, JSON-like w/ texture files) and how it works when importing
         case 'babylon': 
           exportedScene = await SceneSerializer.Serialize(this.props.editor.scene);
-        default: return;
+        default: 
+          throw new Error('Trying to publish to unsupported format');
       }
 
-      if(this.state.distroId) {
+      //invalidate the object(s) if necessary
+      if(this.state.distroId && this.state.distroId !== '') {
         await this._handleCacheInvalidation();
       }
 
-      console.log("exportedScene: ", exportedScene);
-
     } catch (e) {
-      throw new Error('Error publishing scene, e: ' + e);
+      throw new Error('Error publishing scene: ' + e);
     }
   }
 }

@@ -1,4 +1,5 @@
 import * as React from "react";
+// import { remote } from 'electron';
 import { Editor, IPlugin } from "babylonjs-editor";
 import { Toolbar } from "./toolbar";
 
@@ -8,8 +9,11 @@ import { Toolbar } from "./toolbar";
  */
 export const registerEditorPlugin = (editor: Editor): IPlugin => {
   const _getWorkspacePreferences = () => {
-    // console.log("path.dirname(): ", path.dirname());
+    const item = localStorage.getItem('curr-workspace');
 
+    console.log("item: ", item);
+
+    if(item) return JSON.parse(item);
 
     //if not in localStorage, return defaults
     return {
@@ -17,10 +21,8 @@ export const registerEditorPlugin = (editor: Editor): IPlugin => {
       filepath: 'scenes/default/scene.babylon',
       distributionId: '',
       provider: 'AWS',
-      format: 'GLTF',
+      format: 'gltf',
     };
-
-    // return { myProperty: "I'm preferences of the plugin" };
 
   }
 
@@ -29,7 +31,7 @@ export const registerEditorPlugin = (editor: Editor): IPlugin => {
      * Defines the list of all toolbar elements to add when the plugin has been loaded.
      */
     toolbar: [
-      { buttonLabel: "Publish Plugin", buttonIcon: "export", content: <Toolbar editor={editor} getWorkspacePreferences={_getWorkspacePreferences} /> }
+      { buttonLabel: "Publish Plugin", buttonIcon: "export", content: <Toolbar editor={editor}  getWorkspacePreferences={_getWorkspacePreferences} /> }
     ],
 
     /**
@@ -39,7 +41,9 @@ export const registerEditorPlugin = (editor: Editor): IPlugin => {
      * If implemented, the preferences will be saved in the .editorworkspace file each time the user
      * saves the project.
      */
-    getWorkspacePreferences: _getWorkspacePreferences,
+    getWorkspacePreferences: () : any => {
+      
+    },
 
     /**
      * When the plugin saved preferences (@see .getWorkspacePreferences) this function
@@ -47,7 +51,8 @@ export const registerEditorPlugin = (editor: Editor): IPlugin => {
      * the current plugin.
      */
     setWorkspacePreferences: (preferences: any) => {
-      console.log(preferences);
+      console.log("saving plugin preferences");
+      localStorage.setItem('curr-workspace', JSON.stringify(preferences));
     }
   };
 }

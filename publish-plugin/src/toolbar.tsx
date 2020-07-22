@@ -30,7 +30,7 @@ export class Toolbar extends React.Component<IToolbarProps, IToolbarState> {
    */
   public render(): React.ReactNode {
     return (
-      <PublishDialog editor={this.props.editor} getWorkspacePreferences={this.props.getWorkspacePreferences} isOpen={this.state.isOpen} key={"publish-dialog"} handleInvisible={this._handleInvisible} handleVisible={this._handleVisible} />
+      <PublishDialog editor={this.props.editor} getWorkspacePreferences={this.props.getWorkspacePreferences} isOpen={this.state.isOpen} key={"publish-dialog"} handleInvisible={() => this._handleInvisible} handleVisible={() => this._handleVisible} />
       );
   }
 
