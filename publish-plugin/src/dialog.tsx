@@ -6,12 +6,12 @@ import { Editor } from "babylonjs-editor";
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { CloudFront } from 'aws-sdk';
 import { Buffer } from "buffer";
+import { exportPreferences, PublishPreferences } from './preferences';
 
 export interface IPublishDialogProps {
   handleInvisible: Function;
   handleVisible: Function;
   isOpen: boolean;
-  getWorkspacePreferences: Function;
   editor: Editor;
 }
 
@@ -23,7 +23,7 @@ export interface IPublishDialogState {
   bucket: string;
 }
 
-const DEFAULT_FORMAT = '.glb';
+const DEFAULT_FORMAT = 'glb';
 
 export class PublishDialog extends React.Component<
   IPublishDialogProps,
@@ -33,15 +33,32 @@ export class PublishDialog extends React.Component<
   public state: IPublishDialogState = {
     isOpen: this.props.isOpen,
     format: 'glb',
-    filepath: 'scenes/my_scene/babylon' + DEFAULT_FORMAT,
+    filepath: 'scenes/my_scene/babylon' + '.' + DEFAULT_FORMAT,
     distroId: '',
     bucket: '',
   };
 
+  public constructor(props) {
+    super(props);
+
+    const prefs = exportPreferences();
+
+    this.state.filepath = prefs.filepath;
+    this.state.distroId = prefs.distroId;
+    this.state.bucket = prefs.bucket;
+    this.state.format = prefs.format;
+  }
+
   public componentDidMount() : void {
-    const prefs = this.props.getWorkspacePreferences();
-    console.log("workspacePreferences: ", prefs);
+    console.log("exportPreferences(): ", exportPreferences());
   };
+
+    /**
+     * Called on the user wants to edit the preferences of the plugin.
+     */
+    private _handleShowPreferences(): void {
+      this.props.editor.inspector.setSelectedObject(new PublishPreferences());
+  }
 
   public render(): React.ReactNode {
  
@@ -53,6 +70,7 @@ export class PublishDialog extends React.Component<
       enforceFocus={true}
       transitionDuration={1000}
     >
+      <button onClick={() => this._handleShowPreferences()}>Preferences</button>
       <div className={Classes.DIALOG_BODY} key={"hello-world"}>
       <FormGroup>
         <RadioGroup
@@ -70,15 +88,15 @@ export class PublishDialog extends React.Component<
         </RadioGroup>  
         <Label>
           File Path
-          <input onChange={(evt) => {this.setState({filepath: evt.target.value})}} placeholder={'scenes/my_scene/babylon' + DEFAULT_FORMAT} className={Classes.INPUT} id="publish-path" name="publish-path" />
+          <input onChange={(evt) => {this.setState({filepath: evt.target.value})}} value={this.state.filepath} placeholder={'scenes/my_scene/babylon' + DEFAULT_FORMAT} className={Classes.INPUT} id="publish-path" name="publish-path" />
         </Label>
         <Label>
            Bucket Name
-          <input onChange={(evt) => {this.setState({bucket: evt.target.value})}} placeholder={'my-bucket-name'} className={Classes.INPUT} id="publish-bucket" name="publish-bucket" />
+          <input onChange={(evt) => {this.setState({bucket: evt.target.value})}} value={this.state.bucket} placeholder={'my-bucket-name'} className={Classes.INPUT} id="publish-bucket" name="publish-bucket" />
         </Label>
         <Label>
            Distribution ID
-          <input onChange={(evt) => {this.setState({distroId: evt.target.value})}} placeholder={'ASDF'} className={Classes.INPUT} id="publish-distro-id" name="publish-distro-id" />
+          <input onChange={(evt) => {this.setState({distroId: evt.target.value})}} value={this.state.distroId} placeholder={'ASDF'} className={Classes.INPUT} id="publish-distro-id" name="publish-distro-id" />
         </Label>
         </FormGroup>
       </div>
