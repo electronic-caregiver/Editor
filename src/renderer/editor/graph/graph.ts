@@ -80,6 +80,8 @@ import { PlayAnimation } from "./animation/start-animations";
 import { StopAnimation } from "./animation/stop-animations";
 
 import { EasingFunction } from "./animation/easing";
+//custom
+import { Emote } from './custom/emote';
 
 export class GraphCode {
     private static _Initialized: boolean = false;
@@ -215,5 +217,7 @@ export class GraphCode {
         LiteGraph.registerNodeType("animation/stop_animation", StopAnimation);
 
         LiteGraph.registerNodeType("animation/easing_function", EasingFunction);
+        //custom
+        LiteGraph.registerNodeType("custom/emote", Emote);
     }
 }
