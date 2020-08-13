@@ -79,7 +79,10 @@ import { InterpolationAnimation } from "./animation/interpolate";
 import { PlayAnimation } from "./animation/start-animations";
 import { StopAnimation } from "./animation/stop-animations";
 
+<<<<<<< HEAD
 import { EasingFunction } from "./animation/easing";
+=======
+>>>>>>> 44797826... first pass at emote node
 //custom
 import { Emote } from './custom/emote';
 

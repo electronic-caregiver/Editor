@@ -5,6 +5,7 @@ import {
   ICodeGenerationOutput,
   CodeGenerationOutputType,
 } from "../node";
+import { TransformNode } from "babylonjs";
 
 export class Emote extends GraphNode {
   /**
@@ -18,7 +19,13 @@ export class Emote extends GraphNode {
       "", // This is the name of the input. We don't really set a name for the trigger input as it is visually understandable.
       LiteGraph.EVENT as any // "as any" is mandatory as litegraph.js still has problems in its typings.
     );
-    
+    // Now, our node is triggerrable!
+    // Let's add the abstract mesh input
+    this.addInput(
+      "The host dummy node *", // Same, this is the name of the input.
+      "TransformNode"
+    );
+
     this.addProperty(
       "Emote name",
       "vannaMid",
@@ -31,13 +38,6 @@ export class Emote extends GraphNode {
       "string",
       (v) => (this.properties.node_name = v)
     );
-
-    this.addWidget("text", "emote_name", this.properties.emote_name, (v) => {
-      this.properties.emote_name = v;
-    });
-    this.addWidget("text", "node_name", this.properties.node_name, (v) => {
-      this.properties.node_name = v;
-    });
 
     this.addOutput("", LiteGraph.EVENT as any);
   }
@@ -62,8 +62,8 @@ export class Emote extends GraphNode {
    */
   public generateCode(): ICodeGenerationOutput {
     const code = `
-        const node = this._scene.getNodeByName('${this.properties.node_name}');
-        node.metadata.host.GestureFeature.playGesture("Emote", '${this.properties.emote_name}');
+        const node = this.getScene().getNodeByName('${this.properties.node_name}');
+        node.metadata.host.GestureFeature.playGesture("Emote", ${this.properties.emote_name});
     `;
 
     return {
