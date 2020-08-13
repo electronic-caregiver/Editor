@@ -37,6 +37,9 @@ export class Emote extends GraphNode {
       "string",
       (v) => (this.properties.node_name = v)
     );
+    
+    this.addWidget("text", "emote_name", this.properties.emote_name, (v) => this.properties.emote_name = v);
+    this.addWidget("text", "node_name", this.properties.node_name, (v) => this.properties.node_name = v);
 
     this.addOutput("", LiteGraph.EVENT as any);
   }
