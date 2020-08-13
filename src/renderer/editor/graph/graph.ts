@@ -73,6 +73,9 @@ import { InterpolationAnimation } from "./animation/interpolate";
 import { PlayAnimation } from "./animation/start-animations";
 import { StopAnimation } from "./animation/stop-animations";
 
+//custom
+import { Emote } from './custom/emote';
+
 export class GraphCode {
     private static _Initialized: boolean = false;
     
@@ -198,5 +201,8 @@ export class GraphCode {
         LiteGraph.registerNodeType("animation/interpolation_animation", InterpolationAnimation);
         LiteGraph.registerNodeType("animation/play_animation", PlayAnimation);
         LiteGraph.registerNodeType("animation/stop_animation", StopAnimation);
+
+        //custom
+        LiteGraph.registerNodeType("custom/emote", Emote);
     }
 }
