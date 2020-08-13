@@ -5,7 +5,6 @@ import {
   ICodeGenerationOutput,
   CodeGenerationOutputType,
 } from "../node";
-import { TransformNode } from "babylonjs";
 
 export class Emote extends GraphNode {
   /**
@@ -63,7 +62,7 @@ export class Emote extends GraphNode {
   public generateCode(): ICodeGenerationOutput {
     const code = `
         const node = this.getScene().getNodeByName('${this.properties.node_name}');
-        node.metadata.host.GestureFeature.playGesture("Emote", ${this.properties.emote_name});
+        node.metadata.host.GestureFeature.playGesture("Emote", '${this.properties.emote_name}');
     `;
 
     return {
