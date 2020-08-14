@@ -62,7 +62,7 @@ export class Emote extends GraphNode {
    */
   public generateCode(): ICodeGenerationOutput {
     const code = `
-        const node = this.getScene().getNodeByName('${this.properties.node_name}');
+        const node = this._scene.getNodeByName('${this.properties.node_name}');
         node.metadata.host.GestureFeature.playGesture("Emote", '${this.properties.emote_name}');
     `;
 
