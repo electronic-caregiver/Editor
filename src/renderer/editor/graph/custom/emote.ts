@@ -7,7 +7,7 @@ import {
   CodeGenerationOutputType,
 } from "../node";
 
-export class Emote extends GraphNode {
+export class Emote extends GraphNode<{ emote_name: string; }> {
     /**
      * Constructor.
      */
